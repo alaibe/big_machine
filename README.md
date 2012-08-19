@@ -65,7 +65,7 @@ Of course your object can be an ActiveRecord::Base object. In this case, the obj
 
 ## Big machine options
 
-big_magine method can take several options:
+big_machine method can take several options:
 * initial_state is the only one necessary option
 * state_attribute is available only if the object is an active record object
 * workflow if you want to change the normal worklow
