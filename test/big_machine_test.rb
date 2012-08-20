@@ -130,11 +130,11 @@ class BigMachineTest < ActiveSupport::TestCase
 
   test "big machine can lock state" do
     @dummy.lock
-    assert @dummy.locked?
+    assert @dummy.current_state.locked?
     @dummy.back_to_draft
     assert_equal 'LockState', @dummy.current_state.class.name
     assert @dummy.current_state.locked?
-    @dummy.unlock
+    @dummy.current_state.unlock
     assert !@dummy.current_state.locked?
     assert_equal 'LockState', @dummy.current_state.class.name
     @dummy.back_to_draft

@@ -15,12 +15,12 @@ module BigMachine
     end
 
     def set_current_state_from_db
+      return unless self.class.initial_state_class
+
       attribute = send state_attribute
-      if attribute
-        set_current_state(attribute.constantize)
-      else
-        self.class.set_initial_state_class
-      end
+
+      state_class = attribute ? attribute.constantize : self.class.initial_state_class
+      set_current_state(state_class)
     end
 
     def set_current_state(new_state_class)

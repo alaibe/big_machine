@@ -11,6 +11,14 @@ module BigMachine
       public_instance_methods - State.public_instance_methods
     end
 
+    def self.human_name
+      self.to_s.split('::').last.underscore
+    end
+
+    def human_name
+      self.class.human_name
+    end
+
     def transition_to(state_class, *args, &block)
       @stateful.transition_to(state_class, *args, &block)
     end

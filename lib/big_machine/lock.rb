@@ -5,22 +5,28 @@ module BigMachine
     included do
     end
 
+    module ClassMethods
+      def transition_methods
+        public_instance_methods - State.public_instance_methods - [:unlock, :locked?]
+      end
+    end
+
     def locked?
       @locked
     end
 
-    def enter
+    def enter(*args)
       @locked = true
     end
 
-    def unlock
+    def unlock(*args)
       @locked = false
     end
 
-    def transition_to(state_class)
+    def transition_to(state_class, *args, &block)
       return if @locked
 
-      super
+      super(state_class, *args, &block)
     end
   end
 end
