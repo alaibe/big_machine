@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    big_machine (0.0.1)
+    big_machine (1.0.0)
       activesupport (~> 3.2.8)
 
 GEM
@@ -88,6 +88,7 @@ GEM
     tzinfo (0.3.33)
 
 PLATFORMS
+  ruby
   x86-mingw32
 
 DEPENDENCIES

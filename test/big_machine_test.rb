@@ -14,7 +14,7 @@ end
 
 class LockState < BigMachine::State
   include BigMachine::Lock
-  
+
   def back_to_draft
     transition_to Draft
   end
@@ -122,5 +122,10 @@ class BigMachineTest < ActiveSupport::TestCase
     @dummyAR.back_to_draft
     assert_equal 'Draft', @dummyAR.current_state.class.name
     assert_equal 'Draft', @dummyAR.state
+  end
+
+  test "big_machine must set initial state even if active record object" do
+    @dummyWS = DummyWithActiveRecord.new(nil)
+    assert_equal 'Draft', @dummyWS.current_state.class.name
   end
 end
