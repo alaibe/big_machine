@@ -9,6 +9,10 @@ module BigMachine
       def transition_methods
         public_instance_methods - State.public_instance_methods - [:unlock, :locked?]
       end
+
+      def available_methods
+        public_instance_methods - State.public_instance_methods
+      end
     end
 
     def locked?

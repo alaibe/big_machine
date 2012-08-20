@@ -1,8 +1,8 @@
-require "active_support"
+require "active_support/all"
 require "forwardable"
 require "big_machine/state"
 require "big_machine/active_record"
-require "big_machine/transition_methods"
+require "big_machine/available_methods"
 require "big_machine/lock"
 
 module BigMachine
@@ -34,7 +34,7 @@ module BigMachine
 
     def set_initial_state_class
       @initial_state_class = self.initial_state.to_s.camelize.constantize
-      include ::BigMachine::TransitionMethods
+      include ::BigMachine::AvailableMethods
     end
   end
 
@@ -52,7 +52,7 @@ module BigMachine
 
   def forward_current_state
     extend SingleForwardable
-    def_delegators :current_state, *current_state.class.transition_methods
+    def_delegators :current_state, *current_state.class.available_methods
   end
 
   def transition_to(next_state_class, *args, &block)

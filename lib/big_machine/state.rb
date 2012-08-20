@@ -11,6 +11,10 @@ module BigMachine
       public_instance_methods - State.public_instance_methods
     end
 
+    def self.available_methods
+      public_instance_methods - State.public_instance_methods
+    end
+
     def self.human_name
       self.to_s.split('::').last.underscore
     end
