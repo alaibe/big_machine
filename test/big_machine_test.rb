@@ -7,8 +7,46 @@ class Draft < BigMachine::State
     transition_to Online
   end
 
+  def cannot_enter
+    transition_to CannotEnter
+  end
+
   def lock
     transition_to LockState
+  end
+end
+
+class Args < BigMachine::State
+
+  def publish
+    transition_to Online, 'args'
+  end
+
+  def back_to_draft
+    transition_to Online do |obj|
+      obj.block = 'block'
+    end
+  end
+
+  def exit(*args)
+    @stateful.args = args.first
+    super
+  end
+end
+
+class CannotExit < BigMachine::State
+
+  def publish
+    transition_to Online
+  end
+
+  def exit
+    false
+  end
+end
+
+class CannotEnter < BigMachine::State
+  def enter
   end
 end
 
@@ -41,7 +79,7 @@ end
 class DummyWithActiveRecord < ActiveRecord::Base
   include BigMachine
 
-  attr_accessor :state
+  attr_accessor :state, :args, :block
 
   big_machine initial_state: :draft
 
@@ -127,5 +165,29 @@ class BigMachineTest < ActiveSupport::TestCase
   test "big_machine must set initial state even if active record object" do
     @dummyWS = DummyWithActiveRecord.new(nil)
     assert_equal 'Draft', @dummyWS.current_state.class.name
+  end
+
+  test "big machine does not transtion if it's not possible to exit" do
+    @dummyCE = DummyWithActiveRecord.new('CannotExit')
+    @dummyCE.publish
+    assert_equal 'CannotExit', @dummyCE.current_state.class.name
+  end
+
+  test "big machine does not transtion if it's not possible to enter" do
+    @dummyCE = DummyWithActiveRecord.new('Draft')
+    @dummyCE.cannot_enter
+    assert_equal 'Draft', @dummyCE.current_state.class.name
+  end
+
+  test "big machine can take args into transition" do
+    @dummyArgs = DummyWithActiveRecord.new('Args')
+    @dummyArgs.publish
+    assert_equal 'args', @dummyArgs.args
+  end
+
+  test "big machine can take block into transition" do
+    @dummyArgs = DummyWithActiveRecord.new('Args')
+    @dummyArgs.back_to_draft
+    assert_equal 'block', @dummyArgs.block
   end
 end

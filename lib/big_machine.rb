@@ -18,7 +18,7 @@ module BigMachine
   end
 
   module ClassMethods
-    def active_record_model? 
+    def active_record_model?
       defined?(::ActiveRecord::Base) && self.ancestors.include?(::ActiveRecord::Base)
     end
 
@@ -55,9 +55,19 @@ module BigMachine
     def_delegators :current_state, *current_state.class.transition_methods
   end
 
-  def transition_to(next_state_class)
-    current_state.exit
+  def transition_to(next_state_class, *args, &block)
+    return unless current_state.exit *args
+
+    previous_state = current_state
     set_current_state next_state_class
+
+    rollback(previous_state) and return unless current_state.enter *args
+
+    block.call self if block_given?
+  end
+
+  def rollback(previous_state)
+    @current_state = @previous_state
   end
 
 end

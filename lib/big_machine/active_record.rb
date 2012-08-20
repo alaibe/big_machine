@@ -28,9 +28,5 @@ module BigMachine
       send "#{state_attribute}=", new_state_class.name
     end
 
-    def transition_to(next_state_class)
-      super(next_state_class)
-      save!
-    end
   end
 end
