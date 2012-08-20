@@ -104,88 +104,88 @@ class DummyWithActiveRecordAndOtherState < ActiveRecord::Base
   end
 end
 
-class BigMachineTest < ActiveSupport::TestCase
-  setup do
+class BigMachineTest < Test::Unit::TestCase
+  def setup
     @dummy   = DummyMachine.new
     @dummyAR = DummyWithActiveRecord.new('Online')
   end
 
-  test "big_machine set initial state" do
+  def test_big_machine_set_initial_state
     assert_equal 'Draft', @dummy.current_state.class.name
   end
 
-  test "big_machine create new state when start transition" do
+  def test_big_machine_create_new_state_when_start_transition
     @dummy.publish
     assert_equal 'Online', @dummy.current_state.class.name
     @dummy.back_to_draft
     assert_equal 'Draft', @dummy.current_state.class.name
   end
 
-  test "big machine must refuse unavailable action" do
+  def test_big_machine_must_refuse_unavailable_action
     @dummy.publish
     assert_raise NoMethodError do
       @dummy.publish
     end
   end
 
-  test "big machine can lock state" do
+  def test_big_machine_can_lock_state
     @dummy.lock
-    assert @dummy.current_state.locked?
+    assert @dummy.locked?
     @dummy.back_to_draft
     assert_equal 'LockState', @dummy.current_state.class.name
-    assert @dummy.current_state.locked?
-    @dummy.current_state.unlock
-    assert !@dummy.current_state.locked?
+    assert @dummy.locked?
+    @dummy.unlock
+    assert !@dummy.locked?
     assert_equal 'LockState', @dummy.current_state.class.name
     @dummy.back_to_draft
     assert_equal 'Draft', @dummy.current_state.class.name
   end
 
-  test "big_machine can have workflow to refuse some action" do
+  def test_big_machine_can_have_workflow_to_refuse_some_action
     @dummyW = DummyWithWorkflow.new
     @dummyW.publish
     assert_equal 'Draft', @dummyW.current_state.class.name
   end
 
-  test "big_machine read state from database" do
+  def test_big_machine_read_state_from_database
     assert_equal 'Online', @dummyAR.current_state.class.name
   end
 
-  test "big_machine read state from specify column in database" do
+  def test_big_machine_read_state_from_specify_column_in_database
     @dummyAROS = DummyWithActiveRecordAndOtherState.new
     assert_equal 'Online', @dummyAROS.current_state.class.name
   end
 
-  test "big_machine must update attribute when state change" do
+  def test_big_machine_must_update_attribute_when_state_change
     @dummyAR.back_to_draft
     assert_equal 'Draft', @dummyAR.current_state.class.name
     assert_equal 'Draft', @dummyAR.state
   end
 
-  test "big_machine must set initial state even if active record object" do
+  def test_big_machine_must_set_initial_state_even_if_active_record_object
     @dummyWS = DummyWithActiveRecord.new(nil)
     assert_equal 'Draft', @dummyWS.current_state.class.name
   end
 
-  test "big machine does not transtion if it's not possible to exit" do
+  def test_big_machine_does_not_transtion_if_it_s_not_possible_to_exit
     @dummyCE = DummyWithActiveRecord.new('CannotExit')
     @dummyCE.publish
     assert_equal 'CannotExit', @dummyCE.current_state.class.name
   end
 
-  test "big machine does not transtion if it's not possible to enter" do
+  def test_big_machine_does_not_transtion_if_it_s_not_possible_to_enter
     @dummyCE = DummyWithActiveRecord.new('Draft')
     @dummyCE.cannot_enter
     assert_equal 'Draft', @dummyCE.current_state.class.name
   end
 
-  test "big machine can take args into transition" do
+  def test_big_machine_can_take_args_into_transition
     @dummyArgs = DummyWithActiveRecord.new('Args')
     @dummyArgs.publish
     assert_equal 'args', @dummyArgs.args
   end
 
-  test "big machine can take block into transition" do
+  def test_big_machine_can_take_block_into_transition
     @dummyArgs = DummyWithActiveRecord.new('Args')
     @dummyArgs.back_to_draft
     assert_equal 'block', @dummyArgs.block
