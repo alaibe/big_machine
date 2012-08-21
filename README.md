@@ -27,13 +27,16 @@ Source
 
 Add this to your Gemfile
 ``` ruby
+
   gem 'big_machine'
+
 ```
 
 ## Usage
 
-Create your first states
+Create your first state
 ``` ruby
+
   class Draft < BigMachine::State
     def publish
       transition_to Online
@@ -42,23 +45,45 @@ Create your first states
 
   class Online < BigMachine::State
   end
+
+```
+
+All methods you override in you state can takes args and block
+``` ruby
+
+  class Draft < BigMachine::State
+    def publish(now = Time.now)
+      transition_to Online, now
+    end
+  end
+
+  class Online < BigMachine::State
+    def enter(*args)
+      stateful.publish_at args.first
+    end
+  end
+
 ```
 
 Make your object stateful
 ``` ruby
+
   class Car
     include BigMachine
 
     big_machine initial_state: :draft
   end
+
 ```
 
 Now it's possible to publish your car object:
 ``` ruby
+
   car = Car.new
   car.current_state # => Draft
   car.publish
   car.current_state # => Online
+
 ```
 
 Of course your object can be an ActiveRecord::Base object. In this case, the object must have a state column. ( if not, see the next section )
@@ -71,20 +96,23 @@ big_machine method can take several options:
 * workflow if you want to change the normal worklow
 It's possible to call workflow_is method in your different states
 
-###example
+
+## Example
 
 ``` ruby
+
   big_machine initial_state: :dradt, state_attribute: :big_state, workflow: small
 
   class Draft < BigMachine::State
 
     def publish
       return if workflow_is :small
-      
+
       transition_to Online
     end
 
   end
+
 ```
 
 ## Lock module
@@ -93,6 +121,7 @@ A state can include lock module, it will lock the state of your object when your
 The unlock method should be call to unlock the module
 
 ``` ruby
+
   class Draft < BigMachine::State
     include BigMachine::Lock
 
@@ -114,6 +143,7 @@ The unlock method should be call to unlock the module
   article.unlock
   article.publish
   article.current_state # => Online
+
 ```
 
 ## Contributors
