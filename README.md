@@ -149,3 +149,7 @@ The unlock method should be call to unlock the module
 ## Contributors
 
 *Anthony Laibe
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/alaibe/big_machine/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
